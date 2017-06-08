@@ -1,0 +1,5 @@
+mode: atomic
+github.com/AYJiaYou/restest/cmd/restest/main.go:5.13,8.2 2 0
+github.com/AYJiaYou/restest/run/run.go:10.12,12.2 1 0
+github.com/AYJiaYou/restest/run/testcase.go:13.44,15.2 1 0
+github.com/AYJiaYou/restest/run/testcase.go:17.12,19.2 1 0
