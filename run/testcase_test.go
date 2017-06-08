@@ -7,5 +7,6 @@ import (
 )
 
 func TestFoo(t *testing.T) {
+	Bar()
 	assert.NotNil(t, 1)
 }
