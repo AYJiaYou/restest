@@ -1,8 +1,7 @@
 package main
 
-import "github.com/AYJiaYou/restest/run"
+import "fmt"
 
 func main() {
-	run.Foo()
-	run.Bar()
+	fmt.Println("restest")
 }
