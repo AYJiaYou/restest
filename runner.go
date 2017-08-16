@@ -1,4 +1,4 @@
-package run
+package restest
 
 // Runner run the test cases.
 type Runner interface {
