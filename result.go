@@ -1,34 +1,21 @@
 package restest
 
-import (
-	"net/http"
+import "net/http"
 
-	"github.com/stretchr/testify/assert"
-)
-
+// Result is mainly a wrapper for http.Response
 type Result struct {
-	Response *http.Response
-	err      error
+	hResp *http.Response
 }
 
-func NewResult(resp *http.Response, err error) *Result {
+func NewResult(resp *http.Response) *Result {
 	return &Result{
-		Response: resp,
-		err:      err,
+		hResp: resp,
 	}
 }
 
 func (r *Result) Release() {
-	if r.Response != nil {
-		r.Response.Body.Close()
-		r.Response = nil
+	if r.hResp != nil {
+		r.hResp.Body.Close()
+		r.hResp = nil
 	}
-}
-
-func (r *Result) AssertNoError(t assert.TestingT) {
-	//assert.Nil(t, r.err)
-}
-
-func (r *Result) AssertCode(t assert.TestingT, c int) {
-	//assert.Equal(t, c, r.StatusCode)
 }
