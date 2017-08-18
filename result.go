@@ -1,6 +1,10 @@
 package restest
 
-import "net/http"
+import (
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
+)
 
 // Result is mainly a wrapper for http.Response
 type Result struct {
@@ -18,4 +22,22 @@ func (r *Result) Release() {
 		r.hResp.Body.Close()
 		r.hResp = nil
 	}
+}
+
+func (r *Result) Response() *http.Response {
+	return r.hResp
+}
+
+func (r *Result) GetJOSN(v interface{}) error {
+	defer r.hResp.Body.Close()
+	return json.NewDecoder(r.hResp.Body).Decode(v)
+}
+
+func (r *Result) GetString() (string, error) {
+	defer r.hResp.Body.Close()
+	bs, err := ioutil.ReadAll(r.hResp.Body)
+	if err != nil {
+		return "", err
+	}
+	return string(bs), nil
 }
