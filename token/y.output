@@ -1,0 +1,117 @@
+
+state 0
+	$accept: .result $end 
+
+	_WS  shift 3
+	'\''  shift 4
+	'$'  shift 5
+	.  error
+
+	result  goto 1
+	part  goto 2
+
+state 1
+	$accept:  result.$end 
+	result:  result.'+' part 
+
+	$end  accept
+	'+'  shift 6
+	.  error
+
+
+state 2
+	result:  part.    (1)
+	part:  part._WS 
+
+	_WS  shift 7
+	.  reduce 1 (src line 20)
+
+
+state 3
+	part:  _WS.part 
+
+	_WS  shift 3
+	'\''  shift 4
+	'$'  shift 5
+	.  error
+
+	part  goto 8
+
+state 4
+	part:  '\''._STR '\'' 
+
+	_STR  shift 9
+	.  error
+
+
+state 5
+	part:  '$'._STR 
+
+	_STR  shift 10
+	.  error
+
+
+state 6
+	result:  result '+'.part 
+
+	_WS  shift 3
+	'\''  shift 4
+	'$'  shift 5
+	.  error
+
+	part  goto 11
+
+state 7
+	part:  part _WS.    (3)
+
+	.  reduce 3 (src line 28)
+
+
+8: shift/reduce conflict (shift 7(0), red'n 4(0)) on _WS
+state 8
+	part:  part._WS 
+	part:  _WS part.    (4)
+
+	_WS  shift 7
+	.  reduce 4 (src line 34)
+
+
+state 9
+	part:  '\'' _STR.'\'' 
+
+	'\''  shift 12
+	.  error
+
+
+state 10
+	part:  '$' _STR.    (6)
+
+	.  reduce 6 (src line 44)
+
+
+state 11
+	result:  result '+' part.    (2)
+	part:  part._WS 
+
+	_WS  shift 7
+	.  reduce 2 (src line 22)
+
+
+state 12
+	part:  '\'' _STR '\''.    (5)
+
+	.  reduce 5 (src line 39)
+
+
+8 terminals, 3 nonterminals
+7 grammar rules, 13/8000 states
+1 shift/reduce, 0 reduce/reduce conflicts reported
+52 working sets used
+memory: parser 3/120000
+0 extra closures
+16 shift entries, 1 exceptions
+4 goto entries
+0 entries saved by goto default
+Optimizer space used: output 12/120000
+12 table entries, 0 zero
+maximum spread: 8, maximum offset: 7

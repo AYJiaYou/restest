@@ -4,9 +4,11 @@ import "net/http"
 
 // Case is mainly a wrapper for http.Request
 type Case struct {
-	Method string
-	Host   string
-	Path   string
+	Method      string
+	Host        string
+	Path        string
+	TokenHeader string
+	TokenFormat string
 }
 
 func NewCase() *Case {
@@ -24,6 +26,11 @@ func (c *Case) SetHost(v string) *Case {
 
 func (c *Case) SetPath(v string) *Case {
 	c.Path = v
+	return c
+}
+
+func (c *Case) SetToken(header, format string) *Case {
+	c.TokenHeader, c.TokenFormat = header, format
 	return c
 }
 

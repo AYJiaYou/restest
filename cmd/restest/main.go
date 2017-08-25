@@ -1,17 +1,14 @@
 package main
 
-import (
-	"fmt"
-
-	"github.com/AYJiaYou/restest"
-)
+import "github.com/AYJiaYou/restest/token"
 
 func main() {
-	client := restest.NewClient()
+	/*client := restest.NewClient()
 	client.SetHost("https://i.ayjiayou.com:8083")
 
 	ca := restest.NewCase()
 	ca.SetMethod()
-	fmt.Println("hello, restest! :)")
+	fmt.Println("hello, restest! :)")*/
 
+	token.TestParser()
 }
