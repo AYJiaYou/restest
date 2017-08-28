@@ -6,10 +6,15 @@ import __yyfmt__ "fmt"
 //line ./parser.y:4
 import ()
 
-//line ./parser.y:11
+var (
+	_YY_IsString = false
+)
+
+//line ./parser.y:15
 type yySymType struct {
 	yys int
 	str string
+	arr []interface{}
 }
 
 const _STR = 57346
@@ -24,6 +29,9 @@ var yyToknames = [...]string{
 	"'+'",
 	"'\\''",
 	"'$'",
+	"'('",
+	"')'",
+	"','",
 }
 var yyStatenames = [...]string{}
 
@@ -40,39 +48,45 @@ var yyExca = [...]int{
 
 const yyPrivate = 57344
 
-const yyLast = 12
+const yyLast = 25
 
 var yyAct = [...]int{
 
-	3, 2, 4, 5, 12, 8, 6, 7, 11, 10,
-	9, 1,
+	1, 18, 20, 5, 21, 5, 3, 4, 3, 4,
+	17, 11, 16, 7, 2, 8, 13, 14, 10, 19,
+	22, 12, 9, 6, 15,
 }
 var yyPact = [...]int{
 
-	-5, 0, 2, -5, 6, 5, -5, -1000, 2, -3,
-	-1000, 2, -1000,
+	1, 7, 10, -1000, 14, 2, 1, 11, -1000, 13,
+	-1000, 1, 10, -1000, 3, -9, 7, -1000, -1000, -1,
+	-1000, -1000, 7,
 }
 var yyPgo = [...]int{
 
-	0, 11, 1,
+	0, 0, 14, 24, 23, 22, 19,
 }
 var yyR1 = [...]int{
 
-	0, 1, 1, 2, 2, 2, 2,
+	0, 1, 1, 4, 4, 2, 5, 2, 2, 2,
+	6, 6, 3, 3, 3,
 }
 var yyR2 = [...]int{
 
-	0, 1, 3, 2, 2, 3, 2,
+	0, 1, 3, 1, 2, 2, 0, 4, 2, 4,
+	1, 2, 0, 1, 3,
 }
 var yyChk = [...]int{
 
-	-1000, -1, -2, 5, 7, 8, 6, 5, -2, 4,
-	4, -2, 7,
+	-1000, -1, -2, 7, 8, 4, -4, 6, 5, -5,
+	4, 9, -2, 5, 4, -3, -1, 7, 10, -6,
+	11, 5, -1,
 }
 var yyDef = [...]int{
 
-	0, -2, 1, 0, 0, 0, 0, 3, 4, 0,
-	6, 2, 5,
+	0, -2, 1, 6, 0, 0, 0, 3, 5, 0,
+	8, 12, 2, 4, 0, 0, 13, 7, 9, 0,
+	10, 11, 14,
 }
 var yyTok1 = [...]int{
 
@@ -80,7 +94,7 @@ var yyTok1 = [...]int{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 8, 3, 3, 7,
-	3, 3, 3, 6,
+	9, 10, 3, 6, 11,
 }
 var yyTok2 = [...]int{
 
@@ -429,38 +443,73 @@ yydefault:
 
 	case 2:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./parser.y:23
+		//line ./parser.y:29
 		{
 			debugOut("result + part|", yyDollar[1].str, yyDollar[3].str)
 			yyVAL.str = yyDollar[1].str + yyDollar[3].str
 		}
-	case 3:
+	case 5:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./parser.y:30
+		//line ./parser.y:40
 		{
 			debugOut("part _WS|", yyDollar[1].str, yyDollar[2].str)
 			yyVAL.str = yyDollar[1].str
 		}
-	case 4:
-		yyDollar = yyS[yypt-2 : yypt+1]
-		//line ./parser.y:35
-		{
-			debugOut("_WS part|", yyDollar[1].str, yyDollar[2].str)
-			yyVAL.str = yyDollar[2].str
-		}
-	case 5:
-		yyDollar = yyS[yypt-3 : yypt+1]
-		//line ./parser.y:40
-		{
-			debugOut("' _STR '|", yyDollar[2].str)
-			yyVAL.str = yyDollar[2].str
-		}
 	case 6:
-		yyDollar = yyS[yypt-2 : yypt+1]
+		yyDollar = yyS[yypt-1 : yypt+1]
 		//line ./parser.y:45
 		{
+			_YY_IsString = true
+		}
+	case 7:
+		yyDollar = yyS[yypt-4 : yypt+1]
+		//line ./parser.y:49
+		{
+			_YY_IsString = false
+			debugOut("' _STR '|", yyDollar[3].str)
+			yyVAL.str = yyDollar[3].str
+		}
+	case 8:
+		yyDollar = yyS[yypt-2 : yypt+1]
+		//line ./parser.y:55
+		{
 			debugOut("$ _STR|", yyDollar[2].str)
-			yyVAL.str = yyDollar[2].str
+			lex, _ := yylex.(*lexImpl)
+			str, err := lex.ctx.GetVariable(yyDollar[2].str)
+			if err != nil {
+				panic(err)
+			}
+			yyVAL.str = str
+		}
+	case 9:
+		yyDollar = yyS[yypt-4 : yypt+1]
+		//line ./parser.y:65
+		{
+			debugOut("_STR(params)", yyDollar[1].str, yyDollar[3].arr)
+			lex, _ := yylex.(*lexImpl)
+			str, err := lex.ctx.Calculate(yyDollar[1].str, yyDollar[3].arr)
+			if err != nil {
+				panic(err)
+			}
+			yyVAL.str = str
+		}
+	case 12:
+		yyDollar = yyS[yypt-0 : yypt+1]
+		//line ./parser.y:81
+		{
+			yyVAL.arr = nil
+		}
+	case 13:
+		yyDollar = yyS[yypt-1 : yypt+1]
+		//line ./parser.y:85
+		{
+			yyVAL.arr = []interface{}{yyDollar[1].str}
+		}
+	case 14:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line ./parser.y:89
+		{
+			yyVAL.arr = append(yyDollar[1].arr, yyDollar[3].str)
 		}
 	}
 	goto yystack /* stack new state and value */

@@ -2,9 +2,9 @@
 state 0
 	$accept: .result $end 
 
-	_WS  shift 3
-	'\''  shift 4
-	'$'  shift 5
+	_STR  shift 5
+	'\''  shift 3
+	'$'  shift 4
 	.  error
 
 	result  goto 1
@@ -12,106 +12,189 @@ state 0
 
 state 1
 	$accept:  result.$end 
-	result:  result.'+' part 
+	result:  result.plus part 
 
 	$end  accept
-	'+'  shift 6
+	'+'  shift 7
 	.  error
 
+	plus  goto 6
 
 state 2
 	result:  part.    (1)
 	part:  part._WS 
 
-	_WS  shift 7
-	.  reduce 1 (src line 20)
+	_WS  shift 8
+	.  reduce 1 (src line 26)
 
 
 state 3
-	part:  _WS.part 
+	part:  '\''.$$6 _STR '\'' 
+	$$6: .    (6)
 
-	_WS  shift 3
-	'\''  shift 4
-	'$'  shift 5
-	.  error
+	.  reduce 6 (src line 44)
 
-	part  goto 8
+	$$6  goto 9
 
 state 4
-	part:  '\''._STR '\'' 
-
-	_STR  shift 9
-	.  error
-
-
-state 5
 	part:  '$'._STR 
 
 	_STR  shift 10
 	.  error
 
 
-state 6
-	result:  result '+'.part 
+state 5
+	part:  _STR.'(' params ')' 
 
-	_WS  shift 3
-	'\''  shift 4
-	'$'  shift 5
+	'('  shift 11
 	.  error
 
-	part  goto 11
+
+state 6
+	result:  result plus.part 
+
+	_STR  shift 5
+	'\''  shift 3
+	'$'  shift 4
+	.  error
+
+	part  goto 12
 
 state 7
-	part:  part _WS.    (3)
+	plus:  '+'.    (3)
+	plus:  '+'._WS 
 
-	.  reduce 3 (src line 28)
+	_WS  shift 13
+	.  reduce 3 (src line 34)
 
 
-8: shift/reduce conflict (shift 7(0), red'n 4(0)) on _WS
 state 8
-	part:  part._WS 
-	part:  _WS part.    (4)
+	part:  part _WS.    (5)
 
-	_WS  shift 7
-	.  reduce 4 (src line 34)
+	.  reduce 5 (src line 38)
 
 
 state 9
-	part:  '\'' _STR.'\'' 
+	part:  '\'' $$6._STR '\'' 
 
-	'\''  shift 12
+	_STR  shift 14
 	.  error
 
 
 state 10
-	part:  '$' _STR.    (6)
+	part:  '$' _STR.    (8)
 
-	.  reduce 6 (src line 44)
+	.  reduce 8 (src line 54)
 
 
 state 11
-	result:  result '+' part.    (2)
-	part:  part._WS 
+	part:  _STR '('.params ')' 
+	params: .    (12)
 
-	_WS  shift 7
-	.  reduce 2 (src line 22)
+	_STR  shift 5
+	'\''  shift 3
+	'$'  shift 4
+	.  reduce 12 (src line 79)
 
+	result  goto 16
+	part  goto 2
+	params  goto 15
 
 state 12
-	part:  '\'' _STR '\''.    (5)
+	result:  result plus part.    (2)
+	part:  part._WS 
 
-	.  reduce 5 (src line 39)
+	_WS  shift 8
+	.  reduce 2 (src line 28)
 
 
-8 terminals, 3 nonterminals
-7 grammar rules, 13/8000 states
-1 shift/reduce, 0 reduce/reduce conflicts reported
-52 working sets used
-memory: parser 3/120000
-0 extra closures
-16 shift entries, 1 exceptions
-4 goto entries
-0 entries saved by goto default
-Optimizer space used: output 12/120000
-12 table entries, 0 zero
-maximum spread: 8, maximum offset: 7
+state 13
+	plus:  '+' _WS.    (4)
+
+	.  reduce 4 (src line 36)
+
+
+state 14
+	part:  '\'' $$6 _STR.'\'' 
+
+	'\''  shift 17
+	.  error
+
+
+state 15
+	part:  _STR '(' params.')' 
+	params:  params.sep result 
+
+	')'  shift 18
+	','  shift 20
+	.  error
+
+	sep  goto 19
+
+state 16
+	result:  result.plus part 
+	params:  result.    (13)
+
+	'+'  shift 7
+	.  reduce 13 (src line 84)
+
+	plus  goto 6
+
+state 17
+	part:  '\'' $$6 _STR '\''.    (7)
+
+	.  reduce 7 (src line 48)
+
+
+state 18
+	part:  _STR '(' params ')'.    (9)
+
+	.  reduce 9 (src line 64)
+
+
+state 19
+	sep:  sep._WS 
+	params:  params sep.result 
+
+	_STR  shift 5
+	_WS  shift 21
+	'\''  shift 3
+	'$'  shift 4
+	.  error
+
+	result  goto 22
+	part  goto 2
+
+state 20
+	sep:  ','.    (10)
+
+	.  reduce 10 (src line 75)
+
+
+state 21
+	sep:  sep _WS.    (11)
+
+	.  reduce 11 (src line 77)
+
+
+state 22
+	result:  result.plus part 
+	params:  params sep result.    (14)
+
+	'+'  shift 7
+	.  reduce 14 (src line 88)
+
+	plus  goto 6
+
+11 terminals, 7 nonterminals
+15 grammar rules, 23/8000 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
+56 working sets used
+memory: parser 10/120000
+14 extra closures
+25 shift entries, 1 exceptions
+9 goto entries
+4 entries saved by goto default
+Optimizer space used: output 25/120000
+25 table entries, 0 zero
+maximum spread: 11, maximum offset: 19

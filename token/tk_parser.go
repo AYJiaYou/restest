@@ -5,54 +5,57 @@ import (
 	"fmt"
 )
 
-type Contexter interface {
-	GetVariable(name string) (string, error)
-	GetConst(name string) (string, error)
-	Calculate(alg string, params []interface{}) (string, error)
-}
-
 type TkParser interface {
-	GetToken(format string) (string, error)
+	SetFormat(format string)
+	SetContexter(ctx Contexter)
+	GetToken() (string, error)
 }
 
 type tkParserImpl struct {
-	ctx   Contexter
 	yy    *yyParserImpl
 	lexer *lexImpl
 }
 
-func NewParser(c Contexter) TkParser {
+func NewParser() TkParser {
 	return &tkParserImpl{
-		ctx:   c,
 		yy:    &yyParserImpl{},
 		lexer: newLexer(),
 	}
 }
 
-func (p *tkParserImpl) GetToken(format string) (result string, err error) {
+func (p *tkParserImpl) SetFormat(format string) {
+	p.lexer.SetSource(format)
+}
+
+func (p *tkParserImpl) SetContexter(ctx Contexter) {
+	p.lexer.SetContexter(ctx)
+}
+
+func (p *tkParserImpl) GetToken() (result string, err error) {
 	defer func() {
 		if pn := recover(); pn != nil {
 			err = errors.New(fmt.Sprintf("PANIC!!! %v", pn))
 		}
 	}()
 
-	p.lexer.SetSource(format)
 	n := p.yy.Parse(p.lexer)
 	if n != 0 {
 		err = errors.New("yyParser return none zero value:" + string(n))
 		return
 	}
 
-	fmt.Println("========", p.yy)
-	//result = p.yy.lval.str
 	result = p.yy.stack[1].str
 	return
 }
 
 func TestParser() {
-	src := " $DEF"
+	//src := "'TSign ' + $SerialNumber + ':' + urlsafe_base64(hmac_sha1($ReqPath + '\\n' + $ReqBody, $SecretKey))"
+	//src := "$ReqPath + '\\n' + $RegBody"
+	src := "'TSign ' + $SerialNumber + ':' + urlsafe_base64(hmac_sha1($ReqPath + '\\n' + $ReqBody, $SecretKey))"
 	fmt.Println("src:", src)
-	parser := NewParser(nil)
-	tk, err := parser.GetToken(src)
-	fmt.Println("|", tk, err)
+	parser := NewParser()
+	parser.SetFormat(src)
+	parser.SetContexter(newTestContexter())
+	tk, err := parser.GetToken()
+	fmt.Println("("+tk+")", err)
 }

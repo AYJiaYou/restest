@@ -10,18 +10,51 @@ import (
 
 const _EOF = 0
 
+type Contexter interface {
+	GetVariable(name string) (string, error)
+	Calculate(alg string, params []interface{}) (string, error)
+}
+
+type ctxTest struct {
+}
+
+func newTestContexter() Contexter {
+	return &ctxTest{}
+}
+
+func (c *ctxTest) GetVariable(name string) (string, error) {
+	debugOut("Contexter:GetVariable:", name)
+	return "{" + name + "}", nil
+}
+
+func (c *ctxTest) Calculate(alg string, params []interface{}) (string, error) {
+	debugOut("Contexter:Calculate:", alg, params)
+	return fmt.Sprintf("{{%s:%v}}", alg, params), nil
+}
+
 type lexImpl struct {
-	r *strings.Reader
+	r   *strings.Reader
+	ctx Contexter
 }
 
 func isWhitespace(r rune) bool {
-	return r == ' ' || r == '\t' || r == '\n'
+	return r == ' ' || r == '\t'
 }
 
 func isLetter(r rune) bool {
 	return ('a' <= r && r <= 'z') || ('A' <= r && r <= 'Z') ||
 		('0' <= r && r <= '9') ||
-		r == '_' || r == ':'
+		r == '_' || r == ':' || r == '\\' || r == '\n'
+}
+
+func isSpecial(r rune) bool {
+	return r == '+' ||
+		r == '\'' ||
+		r == '$' ||
+		r == '(' ||
+		r == ')' ||
+		r == ',' ||
+		r == _EOF
 }
 
 func newLexer() *lexImpl {
@@ -41,10 +74,7 @@ func (l *lexImpl) Lex(yylval *yySymType) int {
 	} else if isLetter(r) {
 		l.unreadRune()
 		return l.scanString(yylval)
-	}
-
-	switch r {
-	case '+', '\'', '$', '%', '(', ')', ',', _EOF:
+	} else if isSpecial(r) {
 		return int(r)
 	}
 
@@ -53,6 +83,10 @@ func (l *lexImpl) Lex(yylval *yySymType) int {
 
 func (l *lexImpl) SetSource(s string) {
 	l.r = strings.NewReader(s)
+}
+
+func (l *lexImpl) SetContexter(ctx Contexter) {
+	l.ctx = ctx
 }
 
 func (l *lexImpl) readRune() rune {
@@ -97,7 +131,7 @@ func (l *lexImpl) scanString(yylval *yySymType) int {
 	for {
 		if r := l.readRune(); r == _EOF {
 			break
-		} else if !isLetter(r) {
+		} else if isSpecial(r) || (!isLetter(r) && !_YY_IsString) {
 			l.unreadRune()
 			break
 		} else {
