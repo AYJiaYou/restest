@@ -10,28 +10,6 @@ import (
 
 const _EOF = 0
 
-type Contexter interface {
-	GetVariable(name string) (string, error)
-	Calculate(alg string, params []interface{}) (string, error)
-}
-
-type ctxTest struct {
-}
-
-func newTestContexter() Contexter {
-	return &ctxTest{}
-}
-
-func (c *ctxTest) GetVariable(name string) (string, error) {
-	debugOut("Contexter:GetVariable:", name)
-	return "{" + name + "}", nil
-}
-
-func (c *ctxTest) Calculate(alg string, params []interface{}) (string, error) {
-	debugOut("Contexter:Calculate:", alg, params)
-	return fmt.Sprintf("{{%s:%v}}", alg, params), nil
-}
-
 type lexImpl struct {
 	r   *strings.Reader
 	ctx Contexter

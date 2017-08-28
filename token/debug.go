@@ -3,7 +3,7 @@ package token
 import "fmt"
 
 const (
-	_IsDebug = true
+	_IsDebug = false
 )
 
 func debugOut(v ...interface{}) {
