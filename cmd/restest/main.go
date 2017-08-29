@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"mpos/mod"
 
 	"github.com/AYJiaYou/restest"
 )
@@ -11,7 +12,7 @@ func main() {
 	client.CheckServerCert(false)
 
 	ca := restest.NewCase()
-	ca.SetHost("https://i.ayjiayou.com:8083")
+	ca.SetHost("https://localhost:8083")
 	ca.SetMethod("POST")
 	ca.SetPath("orders")
 	ca.SetToken(
@@ -20,6 +21,14 @@ func main() {
 	)
 	ca.SetVariable("SerialNumber", "53a6d334c3b84e45937f2c1e1d6364f2")
 	ca.SetVariable("SecretKey", "7d6387d1c355467885d47f7d92cd0af5")
+
+	order := mod.OrderInfo{
+		ClientID:   1,
+		CustomerID: 1,
+		CardNo:     123,
+		BankID:     1,
+	}
+	ca.SetBodyJSON(&order)
 
 	res, err := client.RunCase(ca)
 	if err != nil {

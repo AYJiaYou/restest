@@ -1,8 +1,10 @@
 package token
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -64,7 +66,7 @@ func (c *ctxReq) GetVariable(name string) (string, error) {
 		if c.req == nil {
 			return "", errors.New("invalid request")
 		}
-		return "/" + c.req.RequestURI, nil
+		return c.req.URL.Path, nil
 
 	case "ReqBody":
 		if c.req == nil {
@@ -73,7 +75,16 @@ func (c *ctxReq) GetVariable(name string) (string, error) {
 		if c.req.Body == nil {
 			return " ", nil
 		}
-		return "ReqBody", nil
+
+		var buf bytes.Buffer
+		if _, err := buf.ReadFrom(c.req.Body); err != nil {
+			return "", err
+		}
+		if err := c.req.Body.Close(); err != nil {
+			return "", err
+		}
+		c.req.Body = ioutil.NopCloser(&buf)
+		return buf.String(), nil
 
 	default:
 		if c.vars == nil {
@@ -87,5 +98,8 @@ func (c *ctxReq) GetVariable(name string) (string, error) {
 }
 
 func (c *ctxReq) Calculate(alg string, params []interface{}) (string, error) {
-	return "", nil
+	if f, ok := _Algs[alg]; ok {
+		return f(params)
+	}
+	return "", errors.New("unknown algorithm: " + alg)
 }
