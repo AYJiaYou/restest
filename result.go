@@ -41,3 +41,17 @@ func (r *Result) GetString() (string, error) {
 	}
 	return string(bs), nil
 }
+
+func (r *Result) IsSuccess() bool {
+	if r.hResp == nil {
+		return false
+	}
+	return 200 <= r.hResp.StatusCode && r.hResp.StatusCode < 300
+}
+
+func (r *Result) GetStatus() string {
+	if r.hResp == nil {
+		return ""
+	}
+	return r.hResp.Status
+}

@@ -44,7 +44,7 @@ func (c *Client) RunCase(ca *Case) (*Result, error) {
 
 	if c.dumpReq {
 		dump, err := httputil.DumpRequestOut(req, true)
-		fmt.Println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+		fmt.Println(">>> restest >>>>>>>>>>>>>>>>>>>>>")
 		if err != nil {
 			fmt.Println("Request Dump Error:", err)
 		}
@@ -59,7 +59,7 @@ func (c *Client) RunCase(ca *Case) (*Result, error) {
 
 	if c.dumpRes {
 		dump, err := httputil.DumpResponse(resp, true)
-		fmt.Println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+		fmt.Println("<<< restest <<<<<<<<<<<<<<<<<<<<<")
 		if err != nil {
 			fmt.Println("Request Dump Error:", err)
 		}
