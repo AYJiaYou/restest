@@ -9,7 +9,7 @@ import (
 
 func main() {
 	client := restest.NewClient()
-	client.CheckServerCert(false)
+	client.SetCheckServerCert(false)
 
 	ca := restest.NewCase()
 	ca.SetHost("https://localhost:8083")

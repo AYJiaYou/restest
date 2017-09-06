@@ -24,13 +24,16 @@ func (r *Result) Release() {
 	}
 }
 
-func (r *Result) Response() *http.Response {
-	return r.hResp
-}
-
 func (r *Result) GetJOSN(v interface{}) error {
 	defer r.hResp.Body.Close()
 	return json.NewDecoder(r.hResp.Body).Decode(v)
+}
+
+func (r *Result) GetStatus() string {
+	if r.hResp == nil {
+		return ""
+	}
+	return r.hResp.Status
 }
 
 func (r *Result) GetString() (string, error) {
@@ -49,9 +52,6 @@ func (r *Result) IsSuccess() bool {
 	return 200 <= r.hResp.StatusCode && r.hResp.StatusCode < 300
 }
 
-func (r *Result) GetStatus() string {
-	if r.hResp == nil {
-		return ""
-	}
-	return r.hResp.Status
+func (r *Result) Response() *http.Response {
+	return r.hResp
 }
