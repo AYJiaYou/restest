@@ -113,7 +113,7 @@ func (c *Case) SetParamQuery(name string, value interface{}) *Case {
 	if c.ParamQuery == nil {
 		c.ParamQuery = url.Values{}
 	}
-	c.ParamQuery.Set(name, fmt.Sprintln(value))
+	c.ParamQuery.Set(name, fmt.Sprintf("%v", value))
 	return c
 }
 

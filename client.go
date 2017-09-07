@@ -89,7 +89,7 @@ func (c *Client) SetClientCert(cert tls.Certificate) *Client {
 	}
 
 	trans.TLSClientConfig.Certificates = []tls.Certificate{cert}
-	//trans.TLSClientConfig.BuildNameToCertificate()
+	trans.TLSClientConfig.BuildNameToCertificate()
 	return c
 }
 
