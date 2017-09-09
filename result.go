@@ -2,8 +2,15 @@ package restest
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
+)
+
+var (
+	ErrNoHeader = errors.New("header not exists")
 )
 
 // Result is mainly a wrapper for http.Response
@@ -12,16 +19,29 @@ type Result struct {
 }
 
 func NewResult(resp *http.Response) *Result {
+	if resp == nil {
+		panic("response can't be nil")
+	}
 	return &Result{
 		hResp: resp,
 	}
 }
 
 func (r *Result) Release() {
-	if r.hResp != nil {
-		r.hResp.Body.Close()
-		r.hResp = nil
+	r.hResp.Body.Close()
+}
+
+func (r *Result) GetHeaderInt(h string) int {
+	i, err := strconv.Atoi(r.hResp.Header.Get(h))
+	if err != nil {
+		fmt.Println(err)
+		return 0
 	}
+	return i
+}
+
+func (r *Result) GetHeaderString(h string) string {
+	return r.hResp.Header.Get(h)
 }
 
 func (r *Result) GetJOSN(v interface{}) error {
@@ -30,9 +50,6 @@ func (r *Result) GetJOSN(v interface{}) error {
 }
 
 func (r *Result) GetStatus() string {
-	if r.hResp == nil {
-		return ""
-	}
 	return r.hResp.Status
 }
 
@@ -46,9 +63,6 @@ func (r *Result) GetString() (string, error) {
 }
 
 func (r *Result) IsSuccess() bool {
-	if r.hResp == nil {
-		return false
-	}
 	return 200 <= r.hResp.StatusCode && r.hResp.StatusCode < 300
 }
 
